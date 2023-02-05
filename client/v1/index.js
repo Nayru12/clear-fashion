@@ -426,21 +426,63 @@ const COTELE_PARIS = [
   }
 ];
 
+
 // 🎯 TODO 1: New released products
-// // 1. Log if we have new products only (true or false)
-// // A new product is a product `released` less than 2 weeks.
+// 1. Log if we have new products only (true or false)
+// A new product is a product `released` less than 2 weeks.
+
+console.log("\n-------- COTELE PARIS --------");
+console.log("\nTODO 1");
+
+const date = new Date();
+var is_new = true;
+
+COTELE_PARIS.forEach(product => {
+  if((date - new Date(product.released))/(1000*60*60*24) > 14) {is_new = false; return;}
+});
+
+console.log("New released products ? ", is_new);
+
 
 // 🎯 TODO 2: Reasonable price
-// // 1. Log if coteleparis is a reasonable price shop (true or false)
-// // A reasonable price if all the products are less than 100€
+// 1. Log if coteleparis is a reasonable price shop (true or false)
+// A reasonable price if all the products are less than 100€
+
+console.log("\nTODO 2");
+
+var is_reasonable = true;
+
+COTELE_PARIS.forEach(product => {
+  if(product.price > 100) {is_reasonable = false; return;}
+});
+
+console.log("Reasonable price ? ", is_reasonable);
+
 
 // 🎯 TODO 3: Find a specific product
 // 1. Find the product with the uuid `2b9a47e3-ed73-52f6-8b91-379e9c8e526c`
 // 2. Log the product
 
+console.log("\nTODO 3");
+
+const product_uuid = COTELE_PARIS.find(product => product.uuid = "2b9a47e3-ed73-52f6-8b91-379e9c8e526c");
+console.log("Product with this uuid : ", product_uuid);
+
 // 🎯 TODO 4: Delete a specific product
 // 1. Delete the product with the uuid `2b9a47e3-ed73-52f6-8b91-379e9c8e526c`
 // 2. Log the new list of product
+
+console.log("\nTODO 4");
+
+console.log("Length before deletion : ", COTELE_PARIS.length);
+const index = COTELE_PARIS.indexOf(product_uuid);
+
+if(index > -1){
+  COTELE_PARIS.splice(index, 1);
+}
+console.log("Length after deletion : ", COTELE_PARIS.length);
+console.table(COTELE_PARIS);
+
 
 // 🎯 TODO 5: Save the favorite product
 // We declare and assign a variable called `blueJacket`
@@ -465,6 +507,13 @@ jacket.favorite = true;
 // 1. Log `blueJacket` and `jacket` variables
 // 2. What do you notice?
 
+console.log("\nTODO 5");
+
+console.log("blueJacket : ", blueJacket);
+console.log("jacket : ", jacket);
+console.log("We can notice that the property 'favorite' has also been set for blueJacket.");
+
+
 // we make a new assignment again
 blueJacket = {
   'link':
@@ -480,6 +529,13 @@ blueJacket = {
 
 // 3. Update `jacket` property with `favorite` to true WITHOUT changing blueJacket properties
 
+const new_jacket = Object.assign({}, blueJacket);
+new_jacket.favorite = true;
+
+console.log("blueJacket : ", blueJacket);
+console.log("new_jacket : ", new_jacket);
+console.log("Now we can see that the jacket property was updated without changing blueJacket");
+
 /**
  * 🎬
  * The End: last thing to do
@@ -489,3 +545,10 @@ blueJacket = {
 // 🎯 LAST TODO: Save in localStorage
 // 1. Save MY_FAVORITE_BRANDS in the localStorage
 // 2. log the localStorage
+
+console.log("\nLast thing to do");
+
+localStorage.setItem("my_favorite_brands", JSON.stringify(MY_FAVORITE_BRANDS));
+
+console.log(localStorage);
+console.table(JSON.parse(localStorage.getItem("my_favorite_brands")));
