@@ -20,12 +20,16 @@ Search for available brands list
 // current products on the page
 let currentProducts = [];
 let currentPagination = {};
+let allBrands = [];
 
 // instantiate the selectors
 const selectShow = document.querySelector('#show-select');
 const selectPage = document.querySelector('#page-select');
 const sectionProducts = document.querySelector('#products');
 const spanNbProducts = document.querySelector('#nbProducts');
+
+const selectBrand = document.querySelector('#brand-select');
+const selectRecentlyReleased = document.querySelector('.recently-select');
 
 /**
  * Set global value
@@ -35,6 +39,10 @@ const spanNbProducts = document.querySelector('#nbProducts');
 const setCurrentProducts = ({result, meta}) => {
   currentProducts = result;
   currentPagination = meta;
+};
+
+const setBrands = ({result}) => {
+  allBrands = result;
 };
 
 /**
@@ -59,6 +67,25 @@ const fetchProducts = async (page = 1, size = 12) => {
   } catch (error) {
     console.error(error);
     return {currentProducts, currentPagination};
+  }
+};
+
+const fetchBrands = async () => {
+  try {
+    const response = await fetch(
+      `https://clear-fashion-api.vercel.app/brands`
+    );
+    const body = await response.json();
+
+    if (body.success !== true) {
+      console.error(body);
+      return {allBrands};
+    }
+
+    return body.data;
+  } catch (error) {
+    console.error(error);
+    return {allBrands};
   }
 };
 
@@ -112,10 +139,34 @@ const renderIndicators = pagination => {
   spanNbProducts.innerHTML = count;
 };
 
-const render = (products, pagination) => {
+/**
+ * Render brands selector
+ * @param  {Object} brands_name
+ */
+/*const renderBrands = brands_name => {
+  const options =  Array.from(
+    (value, index) => `<option value="${index}">${index}</option>`
+  ).join('');
+
+  
+  selectBrand.innerHTML = options;
+};*/
+const renderBrands = brands_name => {
+  const options =  brands_name //["None", ...brands_name] //spread operator to unpack elements
+    .map(name => {
+      return `<option value="${name}">${name}</option>`
+    })
+    .join('');
+  
+  selectBrand.innerHTML = options;
+};
+
+const render = (products, pagination, brands) => {
   renderProducts(products);
   renderPagination(pagination);
   renderIndicators(pagination);
+
+  renderBrands(brands);
 };
 
 /**
@@ -134,7 +185,74 @@ selectShow.addEventListener('change', async (event) => {
 
 document.addEventListener('DOMContentLoaded', async () => {
   const products = await fetchProducts();
+  const brands = await fetchBrands();
+
+  setCurrentProducts(products);
+  setBrands(brands);
+  render(currentProducts, currentPagination, allBrands);
+});
+
+
+/*--------------------- TODO 1 -----------------------------*/
+//Task 1 : Browse pages
+selectPage.addEventListener('change', async (event) => {
+  const products = await fetchProducts(parseInt(event.target.value), currentPagination.pageSize);
 
   setCurrentProducts(products);
   render(currentProducts, currentPagination);
 });
+
+
+/*--------------------- TODO 2 -----------------------------*/
+//Task 2 : Filter by brands
+selectBrand.addEventListener('change', async (event) =>{
+  
+  const selectedBrand = event.target.value;
+  
+  const products_filter = currentProducts.filter(function(product) {
+    return (product.brand == selectedBrand);
+  });
+
+  render(products_filter, currentPagination, selectedBrand);
+});
+
+
+/*--------------------- TODO 3 -----------------------------*/
+//Task 3 : Filter by recent products (less than 3 months otherwise there is no results)
+let flag_recent = false;
+function filterReleased(){
+  if(!flag_recent){
+    const date = new Date();
+
+    const products_filter = currentProducts.filter(function(product) {
+      return ((date - new Date(product.released))/(1000*60*60*24) > 90);
+    });
+
+    flag_recent = true;
+    render(products_filter, currentPagination);}
+
+  else{
+    render(currentProducts, currentPagination);
+    flag_recent = false;}
+};
+
+
+/*--------------------- TODO 4 -----------------------------*/
+//Task 4: Filter by reasonable price
+let flag_reasonable = false;
+
+function filterPrice(){
+  if(!flag_reasonable){
+    const date = new Date();
+
+    const products_filter = currentProducts.filter(function(product) {
+      return (product.price < 50);
+    });
+
+    flag_reasonable = true;
+    render(products_filter, currentPagination);}
+
+  else{
+    render(currentProducts, currentPagination);
+    flag_reasonable = false;}
+};
