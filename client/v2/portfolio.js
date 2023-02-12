@@ -29,7 +29,7 @@ const sectionProducts = document.querySelector('#products');
 const spanNbProducts = document.querySelector('#nbProducts');
 
 const selectBrand = document.querySelector('#brand-select');
-const selectRecentlyReleased = document.querySelector('.recently-select');
+const selectSort = document.querySelector('#sort-select');
 
 /**
  * Set global value
@@ -194,7 +194,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 
 /*--------------------- TODO 1 -----------------------------*/
-//Task 1 : Browse pages
+//Feature 1 : Browse pages
 selectPage.addEventListener('change', async (event) => {
   const products = await fetchProducts(parseInt(event.target.value), currentPagination.pageSize);
 
@@ -204,7 +204,7 @@ selectPage.addEventListener('change', async (event) => {
 
 
 /*--------------------- TODO 2 -----------------------------*/
-//Task 2 : Filter by brands
+//Feature 2 : Filter by brands
 selectBrand.addEventListener('change', async (event) =>{
   
   const selectedBrand = event.target.value;
@@ -218,7 +218,7 @@ selectBrand.addEventListener('change', async (event) =>{
 
 
 /*--------------------- TODO 3 -----------------------------*/
-//Task 3 : Filter by recent products (less than 3 months otherwise there is no results)
+//Feature 3 : Filter by recent products (less than 3 months otherwise there is no results)
 let flag_recent = false;
 function filterReleased(){
   if(!flag_recent){
@@ -238,7 +238,7 @@ function filterReleased(){
 
 
 /*--------------------- TODO 4 -----------------------------*/
-//Task 4: Filter by reasonable price
+//Feature 4: Filter by reasonable price
 let flag_reasonable = false;
 
 function filterPrice(){
@@ -256,3 +256,45 @@ function filterPrice(){
     render(currentProducts, currentPagination);
     flag_reasonable = false;}
 };
+
+
+/*--------------------- TODO 5 & 6-----------------------------*/
+//Feature 5: Sort by price and by date
+selectSort.addEventListener('change', async (event) =>{
+  
+  const sorting_type = event.target.value;
+  
+  let products_filter;
+  switch (sorting_type) {
+    case "price-desc":
+      products_filter = currentProducts.sort((product1, product2) => 
+        product2.price - product1.price);
+      break;
+    case "price-asc":
+      products_filter = currentProducts.sort((product1, product2) => 
+        product1.price - product2.price);
+      break;
+    case "date-desc":
+      products_filter = currentProducts.sort((product1, product2) => 
+        new Date(product1.released) - new Date(product2.released));
+      break;
+    case "date-asc":
+      products_filter = currentProducts.sort((product1, product2) => 
+        new Date(product2.released) - new Date(product1.released));
+      break;
+  }
+  render(products_filter, currentPagination);  
+});
+
+
+/*--------------------- TODO 7 ----------------------------*/
+//There was no Feature 7
+
+
+/*--------------------- TODO 8 -----------------------------*/
+//Feature 8: Number of products indicator
+//Already done
+
+
+/*--------------------- TODO 9 -----------------------------*/
+//Feature 9: Number of recent products indicator
