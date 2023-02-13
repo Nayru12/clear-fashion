@@ -109,18 +109,34 @@ const fetchBrands = async () => {
 const renderProducts = products => {
   const fragment = document.createDocumentFragment();
   const div = document.createElement('div');
+  div.classList.add('wrapper');
   const template = products
     .map(product => {
+      return `
+      <div class="product" id=${product.uuid}>
+        <a target="_blank" rel="noopener noreferrer" href="${product.link}"> <img src=${product.photo}><br/>
+        <span class="brand">${product.brand}<br/></span>
+        <span class="name">${product.name}<br/></span></a>
+        <span class="price">${product.price}€</span>
+        <button id="favorite-select">Favorite</button>
+      </div>
+    `;
+    })
+    .join('');
+    //img src=${product.photo} style="cursor: pointer;" target="_blank" rel="noopener noreferrer" href ="${product.link}">
+    //<a href="#"><img src="http://www.google.com/intl/en_ALL/images/logo.gif" onClick="alert('hi'); return false;"/></a>
+
+    /*.map(product => {
       return `
       <div class="product" id=${product.uuid}>
         <button id="favorite-select">Favorite</button> 
         <span>${product.brand}</span>
         <a target="_blank" rel="noopener noreferrer" href ="${product.link}">${product.name}</a>
         <span>${product.price}</span>
+        <img src=${product.photo}>
       </div>
     `;
-    })
-    .join('');
+    })*/
 
   div.innerHTML = template;
   fragment.appendChild(div);
