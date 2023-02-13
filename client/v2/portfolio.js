@@ -30,6 +30,13 @@ const spanNbProducts = document.querySelector('#nbProducts');
 
 const selectBrand = document.querySelector('#brand-select');
 const selectSort = document.querySelector('#sort-select');
+const spanNbBrands = document.querySelector('#nbBrands');
+const spanNbNews = document.querySelector('#nbNews');
+const spanNbPrice50 = document.querySelector('#nbPrice50');
+const spanNbPrice90 = document.querySelector('#nbPrice90');
+const spanNbPrice95 = document.querySelector('#nbPrice95');
+const spanLastReleased = document.querySelector('#lastReleased');
+
 
 /**
  * Set global value
@@ -92,6 +99,7 @@ const fetchBrands = async () => {
 /**
  * Render list of products
  * @param  {Array} products
+ * adding Feature 12: Open product link
  */
 const renderProducts = products => {
   const fragment = document.createDocumentFragment();
@@ -101,7 +109,7 @@ const renderProducts = products => {
       return `
       <div class="product" id=${product.uuid}>
         <span>${product.brand}</span>
-        <a href="${product.link}">${product.name}</a>
+        <a target="_blank" rel="noopener noreferrer" href ="${product.link}">${product.name}</a>
         <span>${product.price}</span>
       </div>
     `;
@@ -132,11 +140,39 @@ const renderPagination = pagination => {
 /**
  * Render page selector
  * @param  {Object} pagination
+ * @param  {Array} products
  */
-const renderIndicators = pagination => {
+const renderIndicators = (products, pagination) => {
   const {count} = pagination;
 
   spanNbProducts.innerHTML = count;
+
+  
+  //Feature 8 : Number of brands indicator
+  const {length} = allBrands;
+
+  spanNbBrands.innerHTML = length;
+
+
+  //Feature 9 : Number of recent products indicator
+  
+  const {length : recent_length} =  products.filter(product =>
+    ((new Date() - new Date(product.released))/(1000*60*60*24) < 30));
+    
+  spanNbNews.innerHTML = recent_length;
+
+
+  //Feature 10 : p50, p90 and p95 price value indicator
+  products.sort((product1, product2) => product1.price - product2.price);
+  spanNbPrice50.innerHTML = products[Math.round(50/100 * (products.length+1))-1].price;
+  spanNbPrice90.innerHTML = products[Math.round(90/100 * (products.length+1))-1].price;
+  spanNbPrice95.innerHTML = products[Math.round(95/100 * (products.length+1))-1].price;
+
+
+  //Feature 11 : Last released date indicator
+  products.sort((product1, product2) => new Date(product2.released) - new Date(product1.released));
+  spanLastReleased.innerHTML = products[0].released;
+
 };
 
 /**
@@ -161,10 +197,11 @@ const renderBrands = brands_name => {
   selectBrand.innerHTML = options;
 };
 
+
 const render = (products, pagination, brands) => {
   renderProducts(products);
   renderPagination(pagination);
-  renderIndicators(pagination);
+  renderIndicators(products, pagination);
 
   renderBrands(brands);
 };
@@ -218,14 +255,14 @@ selectBrand.addEventListener('change', async (event) =>{
 
 
 /*--------------------- TODO 3 -----------------------------*/
-//Feature 3 : Filter by recent products (less than 3 months otherwise there is no results)
+//Feature 3 : Filter by recent products (less than 1 month otherwise there is no results)
 let flag_recent = false;
 function filterReleased(){
   if(!flag_recent){
     const date = new Date();
 
     const products_filter = currentProducts.filter(function(product) {
-      return ((date - new Date(product.released))/(1000*60*60*24) > 90);
+      return ((date - new Date(product.released))/(1000*60*60*24) < 30);
     });
 
     flag_recent = true;
@@ -288,13 +325,37 @@ selectSort.addEventListener('change', async (event) =>{
 
 
 /*--------------------- TODO 7 ----------------------------*/
-//There was no Feature 7
+//Let's say it is the feature 8
+//Feature 7 (or 8): Number of products indicator
+//Already done
 
 
 /*--------------------- TODO 8 -----------------------------*/
-//Feature 8: Number of products indicator
-//Already done
+//Adding a new feature that was not on git : number of brands
+//Feature 8: Number of brands indicator
+//Inside the renderIndicators method
 
 
 /*--------------------- TODO 9 -----------------------------*/
 //Feature 9: Number of recent products indicator
+//Inside the renderIndicators method
+
+
+/*--------------------- TODO 10 -----------------------------*/
+//Feature 10: p50, p90 and p95 price value indicator
+//Inside the renderIndicators method
+
+
+/*--------------------- TODO 11 -----------------------------*/
+//Feature 11: Last released date indicator
+//Inside the renderIndicators method
+
+
+/*--------------------- TODO 12 -----------------------------*/
+//Feature 12: Open product link
+//Add this in the renderProducts method:
+//<a target="_blank" rel="noopener noreferrer" href ="${product.link}">${product.name}</a>
+
+
+/*--------------------- TODO 13 -----------------------------*/
+//Feature 13: Save as favorite
