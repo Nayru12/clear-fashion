@@ -36,6 +36,7 @@ const spanNbPrice50 = document.querySelector('#nbPrice50');
 const spanNbPrice90 = document.querySelector('#nbPrice90');
 const spanNbPrice95 = document.querySelector('#nbPrice95');
 const spanLastReleased = document.querySelector('#lastReleased');
+const selectFavorite = document.querySelector('#favorite-select');
 
 
 /**
@@ -45,6 +46,10 @@ const spanLastReleased = document.querySelector('#lastReleased');
  */
 const setCurrentProducts = ({result, meta}) => {
   currentProducts = result;
+  //currentProducts = currentProducts.map(product => {return {...product, favorite:"false"}});
+  currentProducts.forEach((product, index) => {
+    currentProducts[index] = {...product, favorite : false};
+  })
   currentPagination = meta;
 };
 
@@ -108,6 +113,7 @@ const renderProducts = products => {
     .map(product => {
       return `
       <div class="product" id=${product.uuid}>
+        <button id="favorite-select">Favorite</button> 
         <span>${product.brand}</span>
         <a target="_blank" rel="noopener noreferrer" href ="${product.link}">${product.name}</a>
         <span>${product.price}</span>
@@ -121,7 +127,6 @@ const renderProducts = products => {
   sectionProducts.innerHTML = '<h2>Products</h2>';
   sectionProducts.appendChild(fragment);
 };
-
 /**
  * Render page selector
  * @param  {Object} pagination
@@ -147,7 +152,7 @@ const renderIndicators = (products, pagination) => {
 
   spanNbProducts.innerHTML = count;
 
-  
+
   //Feature 8 : Number of brands indicator
   const {length} = allBrands;
 
@@ -359,3 +364,44 @@ selectSort.addEventListener('change', async (event) =>{
 
 /*--------------------- TODO 13 -----------------------------*/
 //Feature 13: Save as favorite
+
+sectionProducts.addEventListener('click', event => {
+  
+  const productElement = event.target.parentNode;
+    const id = productElement.id;
+    const index = currentProducts.findIndex(product => product.uuid == id);
+
+  if (currentProducts[index].favorite == true) {
+    event.target.style.backgroundColor = 'white';
+    event.target.style.color = 'black';
+    currentProducts[index].favorite = false;
+  } 
+  
+  else {
+    event.target.style.backgroundColor = 'red';
+    event.target.style.color = 'white';
+    currentProducts[index].favorite = true;
+  }
+});
+
+
+/*--------------------- TODO 14 -----------------------------*/
+//Feature 14: Filter by favorite
+
+let flag_favorite = false;
+
+function filterFav(){
+  if(!flag_favorite){
+    
+    const products_filter = currentProducts.filter(function(product) {
+      return (product.favorite == true);
+    });
+
+    flag_favorite = true;
+    render(products_filter, currentPagination);}
+
+  else{
+    flag_favorite = false;
+    render(currentProducts, currentPagination);
+  }
+};
