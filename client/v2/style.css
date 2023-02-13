@@ -23,12 +23,32 @@ header h1{
 /* ------------ Miscellaneous ------------*/
 h2{
     font-family: "Copperplate Gothic", serif;
+    -webkit-text-stroke: 1px;
+    -webkit-text-stroke-color: rgb(8, 112, 4);
+    font-size: 30px;
 }
 
 body{
     background-color: rgb(241, 234, 226);
 }
 
+
+/* ------------ Filters & Products ------------*/
+.wrap {
+    width: 100%;
+}
+
+.filters_indicators {
+    float:left; 
+    width: 20%;
+    /*height: 400px;*/
+}
+
+.products_display {
+    float: right;
+    height: 400px;
+    width: 80%;
+}
 
 /* ------------ Products ------------*/
 .wrapper {

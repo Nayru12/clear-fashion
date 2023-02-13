@@ -123,26 +123,14 @@ const renderProducts = products => {
     `;
     })
     .join('');
-    //img src=${product.photo} style="cursor: pointer;" target="_blank" rel="noopener noreferrer" href ="${product.link}">
-    //<a href="#"><img src="http://www.google.com/intl/en_ALL/images/logo.gif" onClick="alert('hi'); return false;"/></a>
-
-    /*.map(product => {
-      return `
-      <div class="product" id=${product.uuid}>
-        <button id="favorite-select">Favorite</button> 
-        <span>${product.brand}</span>
-        <a target="_blank" rel="noopener noreferrer" href ="${product.link}">${product.name}</a>
-        <span>${product.price}</span>
-        <img src=${product.photo}>
-      </div>
-    `;
-    })*/
 
   div.innerHTML = template;
   fragment.appendChild(div);
-  sectionProducts.innerHTML = '<h2>Products</h2>';
+  sectionProducts.innerHTML = `<h2>Products - ${currentPagination.pageSize} out of 222 products</h2>`;
   sectionProducts.appendChild(fragment);
 };
+
+
 /**
  * Render page selector
  * @param  {Object} pagination
