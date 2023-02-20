@@ -16,13 +16,28 @@ const parse = data => {
         .text()
         .trim()
         .replace(/\s/g, ' ');
+      
       const price = parseInt(
         $(element)
           .find('.productList-price')
           .text()
       );
 
-      return {name, price};
+      const link = $(element)
+        .find('.productList-link')
+        .attr('href');
+      
+      const detail = $(element)
+        .find('.productList-image-materialInfo')
+        .text();
+      
+      const color = name.substring(name.lastIndexOf(" ")+ 1 , name.length);
+
+      const image = $(element)
+        .find('.productList-image')
+        .find('img').eq(0).attr('data-src');
+        
+      return {name, price, color, link, detail, image};
     })
     .get();
 };
