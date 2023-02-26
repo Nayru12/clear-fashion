@@ -35,9 +35,17 @@ const parse = data => {
       
       const detail = "No data";
 
-      const image = $(element)
+      var image = $(element)
         .find('.w-100')
         .attr('data-src');
+      
+      if(image===undefined){
+        image=$(element)
+        .find('source[type="video/mp4"]')
+        .attr('src');
+      }
+      
+      const brand = "Montlimart";
 
 //.price inside .product-miniature__pricing
 //.text-reset inside product-miniature__title
@@ -45,7 +53,7 @@ const parse = data => {
 //products-list row
 //document.querySelectorAll('.products-list__block') 
 
-      return {name, price, color, link, detail, image};
+      return {name, price, color, link, detail, image, brand};
     })
     .get();
 };

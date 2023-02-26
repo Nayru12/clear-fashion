@@ -36,17 +36,29 @@ async function sandbox (eshop, brand_rq) {
 //const [,, eshop] = process.argv;
 
 const eshop = ['https://www.dedicatedbrand.com/en/men/all-men',
+    'https://www.dedicatedbrand.com/en/women/all-women',
     'https://www.montlimart.com/99-vetements',
-    'https://shop.circlesportswear.com/collections/collection-homme'];
+    'https://shop.circlesportswear.com/collections/collection-homme',
+    'https://shop.circlesportswear.com/collections/collection-femme',
+    'https://shop.circlesportswear.com/collections/accessoires'];
 
 const brands = ['dedicatedbrand',
+    'dedicatedbrand',
     'montlimart',
+    'circlesportswear',
+    'circlesportswear',
     'circlesportswear'];
 
 
 async function display() {
   for (let i = 0; i < eshop.length; i++) {
-    await sandbox(eshop[i], brands[i]);
+    if(brands[i] == "dedicatedbrand"){
+      for(let j = 0; j<=16; j++){
+        await sandbox(eshop[i] + "?p=" + j, brands[i]);
+      }
+    }
+    else
+      await sandbox(eshop[i], brands[i]);
   }
 };
 

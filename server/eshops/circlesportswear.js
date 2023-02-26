@@ -39,7 +39,7 @@ const parse = data => {
         .find('.color-variant').eq(0)
         .attr('data-color');
       
-      const link = $(element)
+      const link = "https://shop.circlesportswear.com" + $(element)
         .find('.full-unstyled-link')
         .attr('href');
       
@@ -55,8 +55,10 @@ const parse = data => {
         .find('.media')
         .find('img').eq(0)
         .attr('src');
+      
+      const brand = "Circle Sportswear";
 
-      return {name, price, color, link, detail, image};
+      return {name, price, color, link, detail, image, brand};
     })
     .get();
 };
