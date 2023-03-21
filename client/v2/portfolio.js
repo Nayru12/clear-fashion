@@ -114,8 +114,8 @@ const renderProducts = products => {
   const template = products
     .map(product => {
       return `
-      <div class="product" id=${product.uuid}>
-        <a target="_blank" rel="noopener noreferrer" href="${product.link}"> <img src=${product.photo}><br/>
+      <div class="product" id=${product.id}>
+        <a target="_blank" rel="noopener noreferrer" href="${product.link}"> <img src=${product.image}><br/>
         <span class="brand">${product.brand}<br/></span>
         <span class="name">${product.name}<br/></span></a>
         <span class="price">${product.price}€</span>
