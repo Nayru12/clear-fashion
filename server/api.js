@@ -85,7 +85,7 @@ app.get('/brands', async (request, response) => {
   response.send(products);
 });
 
-app.get('/products', async (request, response) => {
+/*app.get('/products', async (request, response) => {
   const client = await MongoClient.connect(MONGODB_URI, {'useNewUrlParser': true});
   const db = client.db(MONGODB_DB_NAME);
 
@@ -93,4 +93,23 @@ app.get('/products', async (request, response) => {
 
   const products = await collection.find({}).toArray();
   response.send(products);
+});*/
+app.get('/products', async (request, response) => {
+  const client = await MongoClient.connect(MONGODB_URI, { useNewUrlParser: true });
+  const db = client.db(MONGODB_DB_NAME);
+  const collection = db.collection('products');
+
+  const size = parseInt(request.query.size) || 10; // default page size is 10
+  const page = parseInt(request.query.page) || 1; // default page is 1
+
+  const startIndex = (page - 1) * size;
+  const endIndex = page * size;
+
+  const products = await collection.find({}).skip(startIndex).limit(size).toArray();
+
+  response.send({
+    products,
+    currentPage: page,
+    totalPages: Math.ceil(await collection.countDocuments() / size)
+  });
 });

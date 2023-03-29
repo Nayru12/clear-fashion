@@ -67,7 +67,7 @@ const fetchProducts = async (page = 1, size = 12) => {
   try {
     const response = await fetch(
       //`https://clear-fashion-api.vercel.app?page=${page}&size=${size}`
-      'https://clear-fashion-nlp1.vercel.app?page=${page}&size=${size}'
+      'https://clear-fashion-nlp1.vercel.app/products?page=${page}&size=${size}'
     );
     const body = await response.json();
 
@@ -86,7 +86,7 @@ const fetchProducts = async (page = 1, size = 12) => {
 const fetchBrands = async () => {
   try {
     const response = await fetch(
-      `https://clear-fashion-nlp1.vercel.app?brands`
+      `https://clear-fashion-nlp1.vercel.app/brands`
     );
     const body = await response.json();
 
