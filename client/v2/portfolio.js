@@ -63,10 +63,12 @@ const setBrands = ({result}) => {
  * @param  {Number}  [size=12] - size of the page
  * @return {Object}
  */
+
+//`https://clear-fashion-api.vercel.app?page=${page}&size=${size}`
+
 const fetchProducts = async (page = 1, size = 12) => {
   try {
     const response = await fetch(
-      //`https://clear-fashion-api.vercel.app?page=${page}&size=${size}`
       'https://clear-fashion-nlp1.vercel.app/products?page=${page}&size=${size}'
     );
     const body = await response.json();
