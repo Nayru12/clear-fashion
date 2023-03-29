@@ -99,7 +99,7 @@ app.get('/products', async (request, response) => {
   const db = client.db(MONGODB_DB_NAME);
   const collection = db.collection('products');
 
-  const size = parseInt(request.query.size) || 10; // default page size is 10
+  const size = parseInt(request.query.size) || 12; // default page size is 10
   const page = parseInt(request.query.page) || 1; // default page is 1
 
   const startIndex = (page - 1) * size;
@@ -109,7 +109,7 @@ app.get('/products', async (request, response) => {
 
   response.send({
     products,
-    currentPage: page,
-    totalPages: Math.ceil(await collection.countDocuments() / size)
+    currentPage: page
   });
+  //  totalPages: Math.ceil(await collection.countDocuments() / size)
 });
