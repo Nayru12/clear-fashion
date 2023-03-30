@@ -94,6 +94,7 @@ app.get('/brands', async (request, response) => {
   const products = await collection.find({}).toArray();
   response.send(products);
 });*/
+
 app.get('/products', async (request, response) => {
   const client = await MongoClient.connect(MONGODB_URI, { useNewUrlParser: true });
   const db = client.db(MONGODB_DB_NAME);

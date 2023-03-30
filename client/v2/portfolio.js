@@ -76,7 +76,7 @@ const fetchProducts = async (page = 1, size = 12) => {
     if (body.success !== true) {
       console.log("hey");
       console.error(body);
-      return {currentProducts, currentPagination};
+      return {products, currentPage};
     }
     console.log("?");
     return body.data;
