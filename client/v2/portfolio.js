@@ -74,7 +74,7 @@ const fetchProducts = async (page = 1, size = 12) => {
     const body = await response.json();
     patate=body;
     currentProducts = body.currentProducts;
-    currentPagination = body.currentPagee;
+    currentPagination = body.currentPagination;
 
     if(body == null){
       console.error(body);

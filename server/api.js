@@ -110,7 +110,7 @@ app.get('/products', async (request, response) => {
 
   response.send({
     currentProducts: products,
-    currentPage: page,
+    currentPagination: {currentPage: page, currentSize: products.length},
     totalPages: Math.ceil(await collection.countDocuments() / size)
   });
 
