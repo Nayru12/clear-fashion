@@ -65,14 +65,14 @@ const selectFavorite = document.querySelector('#favorite-select');
  */
 
 //`https://clear-fashion-api.vercel.app?page=${page}&size=${size}`
-let patate={};
+
 const fetchProducts = async (page = 1, size = 12) => {
   try {
     const response = await fetch(
       `https://clear-fashion-nlp1.vercel.app/products?page=${page}&size=${size}`
     );
     const body = await response.json();
-    patate=body;
+    
     currentProducts = body.currentProducts;
     currentPagination = body.currentPagination;
 
@@ -142,7 +142,7 @@ const renderProducts = products => {
 
   div.innerHTML = template;
   fragment.appendChild(div);
-  sectionProducts.innerHTML = `<h2>Products - ${currentPagination.pageSize} out of 222 products</h2>`;
+  sectionProducts.innerHTML = `<h2>Products - ${currentPagination.currentSize} out of 1553 products</h2>`;
   sectionProducts.appendChild(fragment);
 };
 
@@ -151,8 +151,13 @@ const renderProducts = products => {
  * Render page selector
  * @param  {Object} pagination
  */
+let patate ={};
 const renderPagination = pagination => {
   const {currentPage, pageCount} = pagination;
+  patate = pagination;
+  console.log("hey " + currentPage);
+  console.log("heyd " + pageCount);
+
   const options = Array.from(
     {'length': pageCount},
     (value, index) => `<option value="${index + 1}">${index + 1}</option>`
@@ -258,7 +263,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 /*--------------------- TODO 1 -----------------------------*/
 //Feature 1 : Browse pages
 selectPage.addEventListener('change', async (event) => {
-  const products = await fetchProducts(parseInt(event.target.value), currentPagination.pageSize);
+  const products = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize);
 
   //setCurrentProducts(products);
   render(currentProducts, currentPagination);
