@@ -72,18 +72,20 @@ const fetchProducts = async (page = 1, size = 12) => {
       `https://clear-fashion-nlp1.vercel.app/products?page=${page}&size=${size}`
     );
     const body = await response.json();
+    currentProducts=body[0];
+    currentPagination=body[1];
 
     if (body.success !== true) {
-      console.log("hesy");
+      console.log("heesy");
       console.error(body);
-      return {products, currentPage};
+      return {currentProducts, currentPagination};
     }
-    console.log("?s");
+    console.log("?se");
     return body.data;
   } catch (error) {
-    console.log("ahs");
+    console.log("ahes");
     console.error(error);
-    return {products, currentPagination};
+    return {currentProducts, currentPagination};
   }
 };
 
