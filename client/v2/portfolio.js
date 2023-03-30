@@ -154,10 +154,6 @@ const renderProducts = products => {
 let patate ={};
 const renderPagination = pagination => {
   const {currentPage, pageCount} = pagination;
-  patate = pagination;
-  console.log("hey " + currentPage);
-  console.log("heyd " + pageCount);
-
   const options = Array.from(
     {'length': pageCount},
     (value, index) => `<option value="${index + 1}">${index + 1}</option>`
