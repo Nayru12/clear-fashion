@@ -81,8 +81,8 @@ app.get('/brands', async (request, response) => {
 
   const collection = db.collection('products');
 
-  const products = await collection.distinct('brand');
-  response.send(products);
+  const brands = await collection.distinct('brand');
+  response.send(brands);
 });
 
 /*app.get('/products', async (request, response) => {
@@ -109,7 +109,7 @@ app.get('/products', async (request, response) => {
   const products = await collection.find({}).skip(startIndex).limit(size).toArray();
 
   response.send({
-    products,
+    currentProducts: products,
     currentPage: page,
     totalPages: Math.ceil(await collection.countDocuments() / size)
   });

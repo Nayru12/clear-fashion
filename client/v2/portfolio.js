@@ -44,18 +44,18 @@ const selectFavorite = document.querySelector('#favorite-select');
  * @param {Array} result - products to display
  * @param {Object} meta - pagination meta info
  */
-const setCurrentProducts = ({result, meta}) => {
+/*const setCurrentProducts = ({result, meta}) => {
   currentProducts = result;
   //currentProducts = currentProducts.map(product => {return {...product, favorite:"false"}});
   currentProducts.forEach((product, index) => {
     currentProducts[index] = {...product, favorite : false};
   })
   currentPagination = meta;
-};
+};*/
 
-const setBrands = ({result}) => {
+/*const setBrands = ({result}) => {
   allBrands = result;
-};
+};*/
 
 /**
  * Fetch products from api
@@ -65,31 +65,35 @@ const setBrands = ({result}) => {
  */
 
 //`https://clear-fashion-api.vercel.app?page=${page}&size=${size}`
-
+let patate={};
 const fetchProducts = async (page = 1, size = 12) => {
   try {
     const response = await fetch(
       `https://clear-fashion-nlp1.vercel.app/products?page=${page}&size=${size}`
     );
     const body = await response.json();
-    console.log("test" + body);
-    currentProducts=body[0];
-    currentPagination=body[1];
-    console.log("test1" + currentProducts);
-    console.log("test2" + currentPagination);
+    patate=body;
+    currentProducts = body.currentProducts;
+    currentPagination = body.currentPagee;
 
-    if (body.success !== true) {
-      console.log("heesy");
+    if(body == null){
       console.error(body);
       return {currentProducts, currentPagination};
     }
-    console.log("?se");
+    return {currentProducts, currentPagination};
+  } catch (error) {
+      console.error(error);
+      return {currentProducts, currentPagination};
+    }
+    /*if (body.success !== true) {
+      console.error(body);
+      return {currentProducts, currentPagination};
+    }
     return body.data;
   } catch (error) {
-    console.log("ahes");
     console.error(error);
     return {currentProducts, currentPagination};
-  }
+  }*/
 };
 
 const fetchBrands = async () => {
@@ -98,13 +102,15 @@ const fetchBrands = async () => {
       `https://clear-fashion-nlp1.vercel.app/brands`
     );
     const body = await response.json();
+    allBrands = body;
 
+    return {allBrands};/*
     if (body.success !== true) {
       console.error(body);
       return {allBrands};
     }
 
-    return body.data;
+    return body.data;*/
   } catch (error) {
     console.error(error);
     return {allBrands};
@@ -235,7 +241,7 @@ const render = (products, pagination, brands) => {
 selectShow.addEventListener('change', async (event) => {
   const products = await fetchProducts(currentPagination.currentPage, parseInt(event.target.value));
 
-  setCurrentProducts(products);
+  //setCurrentProducts(products);
   render(currentProducts, currentPagination);
 });
 
@@ -243,8 +249,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   const products = await fetchProducts();
   const brands = await fetchBrands();
 
-  setCurrentProducts(products);
-  setBrands(brands);
+  //setCurrentProducts(products);
+  //setBrands(brands);
   render(currentProducts, currentPagination, allBrands);
 });
 
@@ -254,7 +260,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 selectPage.addEventListener('change', async (event) => {
   const products = await fetchProducts(parseInt(event.target.value), currentPagination.pageSize);
 
-  setCurrentProducts(products);
+  //setCurrentProducts(products);
   render(currentProducts, currentPagination);
 });
 
