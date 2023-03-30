@@ -74,14 +74,14 @@ const fetchProducts = async (page = 1, size = 12) => {
     const body = await response.json();
 
     if (body.success !== true) {
-      console.log("hey");
+      console.log("hesy");
       console.error(body);
       return {products, currentPage};
     }
-    console.log("?");
+    console.log("?s");
     return body.data;
   } catch (error) {
-    console.log("ah");
+    console.log("ahs");
     console.error(error);
     return {currentProducts, currentPagination};
   }
