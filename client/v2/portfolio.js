@@ -83,7 +83,7 @@ const fetchProducts = async (page = 1, size = 12) => {
   } catch (error) {
     console.log("ahs");
     console.error(error);
-    return {currentProducts, currentPagination};
+    return {products, currentPagination};
   }
 };
 
