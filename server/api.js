@@ -102,17 +102,23 @@ app.get('/products', async (request, response) => {
 
   const size = parseInt(request.query.size) || 12 // default page size is 10
   const page = parseInt(request.query.page) || 1; // default page is 1
-
+  
   const startIndex = (page - 1) * size;
   const endIndex = page * size;
 
-  const products = await collection.find({}).skip(startIndex).limit(size).toArray();
+  const brand = request.query.brand;
+  let filter = {};
+  if (brand) {
+    filter = { brand: brand };
+  }
+
+  const products = await collection.find(filter).skip(startIndex).limit(size).toArray();
 
   response.send({
     currentProducts: products,
     currentPagination: {currentPage: page, 
       currentSize: products.length,
-      pageCount: Math.ceil(await collection.countDocuments() / size)
+      pageCount: Math.ceil(await collection.countDocuments(filter) / size)
     },
   });
 });

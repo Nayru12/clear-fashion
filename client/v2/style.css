@@ -50,6 +50,18 @@ body{
     width: 80%;
 }
 
+/* ------------ Favorite ------------*/
+/* Style pour le bouton favori actif */
+.favorite {
+    background-color: red;
+    color: white;
+  }
+  .no_favorite {
+    background-color: white;
+    color: black;
+  }
+  
+
 /* ------------ Products ------------*/
 .wrapper {
     display: grid;

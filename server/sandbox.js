@@ -20,7 +20,7 @@ const circlesportswearbrand = require('./eshops/circlesportswear');*/
       const json_products = products.map(product => JSON.stringify(product)).join(',\n');
   
       var fs = require('fs');
-      fs.appendFile("products.json", json_products, function(err, result) {
+      fs.appendFile("products2.json", json_products, function(err, result) {
         if(err) console.log('error', err);
       });
   
@@ -53,7 +53,7 @@ const circlesportswearbrand = require('./eshops/circlesportswear');*/
   async function display() {
     
     var fs = require('fs');    
-    fs.appendFile("products.json", "[\n", function(err, result) {
+    fs.appendFile("products2.json", "[\n", function(err, result) {
       if(err) console.log('error', err);
     });
 
@@ -63,7 +63,7 @@ const circlesportswearbrand = require('./eshops/circlesportswear');*/
         for(let j = 0; j<=16; j++){
           await sandbox(eshop[i] + "?p=" + j, brands[i]);
 
-          fs.appendFile("products.json", ",\n", function(err, result) {
+          fs.appendFile("products2.json", ",\n", function(err, result) {
             if(err) console.log('error', err);
           });
         }
@@ -75,19 +75,19 @@ const circlesportswearbrand = require('./eshops/circlesportswear');*/
 
       else{
         await sandbox(eshop[i], brands[i]);
-        fs.appendFile("products.json", ",\n", function(err, result) {
+        fs.appendFile("products2.json", ",\n", function(err, result) {
           if(err) console.log('error', err);
         });
       }
     }
 
-    fs.appendFile("products.json", "\n]", function(err, result) {
+    fs.appendFile("products2.json", "\n]", function(err, result) {
       if(err) console.log('error', err);
     });
   };
   
   var fs = require('fs');
-      fs.writeFile("products.json", '', function(err, result) {
+      fs.writeFile("products2.json", '', function(err, result) {
         if(err) console.log('error', err);
       });
   

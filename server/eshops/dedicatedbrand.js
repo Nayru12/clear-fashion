@@ -38,13 +38,14 @@ const parse = data => {
         .find('img').eq(0).attr('data-src');
 
       const brand = "Dedicated";
+      const favorite = false;
       
       function randomDate(start, end) {
         return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime())).toISOString().slice(0,10);
     }
-      const date = randomDate(new Date('2022-09-01'), new Date ('2023-03-12'));
+      const date = randomDate(new Date('2022-09-01'), new Date ('2023-03-30'));
 
-      return {name, price, color, date, link, detail, image, brand};
+      return {name, price, color, date, link, detail, image, brand, favorite};
     })
     .get();
 };

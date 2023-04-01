@@ -21,6 +21,7 @@ Search for available brands list
 let currentProducts = [];
 let currentPagination = {};
 let allBrands = [];
+let brand;
 
 // instantiate the selectors
 const selectShow = document.querySelector('#show-select');
@@ -66,10 +67,10 @@ const selectFavorite = document.querySelector('#favorite-select');
 
 //`https://clear-fashion-api.vercel.app?page=${page}&size=${size}`
 
-const fetchProducts = async (page = 1, size = 12) => {
+const fetchProducts = async (page = 1, size = 12, brand='Monlimart') => {
   try {
     const response = await fetch(
-      `https://clear-fashion-nlp1.vercel.app/products?page=${page}&size=${size}`
+      `https://clear-fashion-nlp1.vercel.app/products?page=${page}&size=${size}&brand=${brand}`
     );
     const body = await response.json();
     
@@ -128,13 +129,15 @@ const renderProducts = products => {
   div.classList.add('wrapper');
   const template = products
     .map(product => {
+      const isFavorite = product.favorite ? 'favorite' : 'no_favorite';
       return `
-      <div class="product" id=${product.id}>
+      <div class="product" id=${product._id}>
         <a target="_blank" rel="noopener noreferrer" href="${product.link}"> <img src=${product.image}><br/>
         <span class="brand">${product.brand}<br/></span>
         <span class="name">${product.name}<br/></span></a>
         <span class="price">${product.price}€</span>
-        <button id="favorite-select">Favorite</button>
+        <button id="favorite-select" class=${isFavorite}>Favori</button>
+        <span class="date">${product.date}</span>
       </div>
     `;
     })
@@ -142,7 +145,7 @@ const renderProducts = products => {
 
   div.innerHTML = template;
   fragment.appendChild(div);
-  sectionProducts.innerHTML = `<h2>Products - ${currentPagination.currentSize} out of 1553 products</h2>`;
+  sectionProducts.innerHTML = `<h2>Products - ${currentPagination.currentSize} out of 1572 products</h2>`;
   sectionProducts.appendChild(fragment);
 };
 
@@ -151,7 +154,7 @@ const renderProducts = products => {
  * Render page selector
  * @param  {Object} pagination
  */
-let patate ={};
+
 const renderPagination = pagination => {
   const {currentPage, pageCount} = pagination;
   const options = Array.from(
@@ -169,9 +172,9 @@ const renderPagination = pagination => {
  * @param  {Array} products
  */
 const renderIndicators = (products, pagination) => {
-  const {count} = pagination;
+  const {currentSize} = pagination;
 
-  spanNbProducts.innerHTML = count;
+  spanNbProducts.innerHTML = currentSize;
 
 
   //Feature 8 : Number of brands indicator
@@ -183,7 +186,7 @@ const renderIndicators = (products, pagination) => {
   //Feature 9 : Number of recent products indicator
   
   const {length : recent_length} =  products.filter(product =>
-    ((new Date() - new Date(product.released))/(1000*60*60*24) < 30));
+    ((new Date() - new Date(product.date))/(1000*60*60*24) < 30));
     
   spanNbNews.innerHTML = recent_length;
 
@@ -196,8 +199,8 @@ const renderIndicators = (products, pagination) => {
 
 
   //Feature 11 : Last released date indicator
-  products.sort((product1, product2) => new Date(product2.released) - new Date(product1.released));
-  spanLastReleased.innerHTML = products[0].released;
+  products.sort((product1, product2) => new Date(product2.date) - new Date(product1.date));
+  spanLastReleased.innerHTML = products[0].date;
 
 };
 
@@ -214,7 +217,9 @@ const renderIndicators = (products, pagination) => {
   selectBrand.innerHTML = options;
 };*/
 const renderBrands = brands_name => {
-  const options =  brands_name //["None", ...brands_name] //spread operator to unpack elements
+  //const options =  brands_name 
+  //const options = ['All'].concat(brands_name)
+  const options = ["All", ...brands_name] //spread operator to unpack elements
     .map(name => {
       return `<option value="${name}">${name}</option>`
     })
@@ -272,9 +277,13 @@ selectBrand.addEventListener('change', async (event) =>{
   
   const selectedBrand = event.target.value;
   
-  const products_filter = currentProducts.filter(function(product) {
+  /*const products_filter = currentProducts.filter(function(product) {
     return (product.brand == selectedBrand);
-  });
+  });*/
+  console.log("yo " + selectedBrand);
+  selectedBrand = "All" ? "" : selectedBrand;
+
+  const products_filter = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize, selectedBrand);
 
   render(products_filter, currentPagination, selectedBrand);
 });
@@ -288,7 +297,7 @@ function filterReleased(){
     const date = new Date();
 
     const products_filter = currentProducts.filter(function(product) {
-      return ((date - new Date(product.released))/(1000*60*60*24) < 30);
+      return ((date - new Date(product.date))/(1000*60*60*24) < 30);
     });
 
     flag_recent = true;
@@ -339,11 +348,11 @@ selectSort.addEventListener('change', async (event) =>{
       break;
     case "date-desc":
       products_filter = currentProducts.sort((product1, product2) => 
-        new Date(product1.released) - new Date(product2.released));
+        new Date(product1.date) - new Date(product2.date));
       break;
     case "date-asc":
       products_filter = currentProducts.sort((product1, product2) => 
-        new Date(product2.released) - new Date(product1.released));
+        new Date(product2.date) - new Date(product1.date));
       break;
   }
   render(products_filter, currentPagination);  
@@ -385,12 +394,11 @@ selectSort.addEventListener('change', async (event) =>{
 
 /*--------------------- TODO 13 -----------------------------*/
 //Feature 13: Save as favorite
-
 sectionProducts.addEventListener('click', event => {
-  
+
   const productElement = event.target.parentNode;
-    const id = productElement.id;
-    const index = currentProducts.findIndex(product => product.uuid == id);
+  const id = productElement.id;
+  const index = currentProducts.findIndex(product => product._id == id);
 
   if (currentProducts[index].favorite == true) {
     event.target.style.backgroundColor = 'white';

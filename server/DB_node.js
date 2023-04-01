@@ -8,7 +8,7 @@ async function createDB() {
   const client = await MongoClient.connect(MONGODB_URI, {'useNewUrlParser': true});
   const db =  client.db(MONGODB_DB_NAME);
 
-  const products = require('./products.json');
+  const products = require('./products2.json');
   const collection = db.collection('products');
 
   await collection.deleteMany({});
@@ -19,7 +19,7 @@ async function createDB() {
   client.close();  
 }
 
-//createDB();
+createDB();
 
 //------------------------------------ QUERIES ------------------------------------
 
@@ -28,7 +28,7 @@ async function queries(){
   const client = await MongoClient.connect(MONGODB_URI, {'useNewUrlParser': true});
   const db =  client.db(MONGODB_DB_NAME);
 
-  const products = require('./products.json');
+  const products = require('./products2.json');
   const collection = db.collection('products');
 
 
