@@ -85,6 +85,21 @@ app.get('/brands', async (request, response) => {
   response.send(brands);
 });
 
+app.get('/colors', async (request, response) => {
+  const client = await MongoClient.connect(MONGODB_URI, {'useNewUrlParser': true});
+  const db = client.db(MONGODB_DB_NAME);
+
+  const collection = db.collection('products');
+
+  const colors = await collection.distinct('color', { 
+    color: { 
+      $nin: ['Adults', "You"],
+      $regex: /^[A-Za-z]/
+    }
+  });
+  response.send(colors);
+});
+
 /*app.get('/products', async (request, response) => {
   const client = await MongoClient.connect(MONGODB_URI, {'useNewUrlParser': true});
   const db = client.db(MONGODB_DB_NAME);
@@ -106,13 +121,27 @@ app.get('/products', async (request, response) => {
   const startIndex = (page - 1) * size;
   const endIndex = page * size;
 
-  const brand = request.query.brand;
   let filter = {};
-  if (brand) {
-    filter = { brand: brand };
+  if (request.query.brand) {
+    filter.brand = request.query.brand;
+  }
+  if (request.query.price) {
+    filter.price = {$lte: parseInt(request.query.price)};
+  }
+  if (request.query.date) {
+    //const date = new Date(Date.parse(request.query.date));
+    //filter.date = {$lte: date};
+    filter.date = {$gte: request.query.date};
+  }
+  if (request.query.color) {
+    filter.color = request.query.color;
   }
 
-  const products = await collection.find(filter).skip(startIndex).limit(size).toArray();
+const options = {
+    sort: {price: 1, date:1}
+};
+
+  const products = await collection.find(filter, options).skip(startIndex).limit(size).toArray();
 
   response.send({
     currentProducts: products,
