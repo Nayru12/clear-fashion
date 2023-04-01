@@ -125,16 +125,17 @@ app.get('/products', async (request, response) => {
   if (request.query.brand) {
     filter.brand = request.query.brand;
   }
-  if (request.query.price) {
-    filter.price = {$lte: parseInt(request.query.price)};
+  if (request.query.pricelt) {
+    filter.price = {$lte: parseInt(request.query.pricelt)};
+  }
+  if (request.query.pricegt) {
+    console.log(request.query.pricegt)
+    filter.price = {$gte: parseInt(request.query.pricegt)};
   }
   if (request.query.date) {
     //const date = new Date(Date.parse(request.query.date));
     //filter.date = {$lte: date};
     filter.date = {$gte: request.query.date};
-  }
-  if (request.query.color) {
-    filter.color = request.query.color;
   }
 
 const options = {

@@ -53,13 +53,20 @@ body{
 /* ------------ Favorite ------------*/
 /* Style pour le bouton favori actif */
 .favorite {
-    background-color: red;
-    color: white;
-  }
-  .no_favorite {
-    background-color: white;
-    color: black;
-  }
+   background-color: red;
+   color: white;
+ }
+
+.no_favorite {
+   background-color: white;
+   color: black;
+}
+
+.btn-red {
+   background-color: red;
+   color: white;
+}
+  
   
 
 /* ------------ Products ------------*/

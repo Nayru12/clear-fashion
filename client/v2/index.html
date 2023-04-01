@@ -36,6 +36,18 @@
               <select name="brand" id="brand-select"> </select>
             </div>
           </div>
+          <div id="price">
+            <label for="price-select">Price's range:</label>
+            <select name="price" id="price-select">
+              <option value="no_filter">No filter</option>
+              <option value="20">Less than 20</option>
+              <option value="reasonable">Reasonable Price (less than 50)</option>
+              <option value="80">Less than 80</option>
+              <option value="100">Less than 100</option>
+              <option value="101">More than 100</option>
+              <option value="200">More than 200</option>
+            </select>
+          </div>
           <div id="sort">
             <label for="sort-select">Sort:</label>
             <select name="sort" id="sort-select">
@@ -46,7 +58,8 @@
             </select>
           </div>
           <div id="favorite">
-            <button onclick="filterFav()" class="favProducts-select">Favorite products</button> 
+            <button onclick="filterFav()" id="favProducts-select">Favorite products</button> 
+          </div>
         </section>
         <section id="indicators">
           <h2>Indicators</h2>
