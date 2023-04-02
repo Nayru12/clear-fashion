@@ -403,24 +403,24 @@ function filterPrice(){
 selectSort.addEventListener('change', async (event) =>{
   
   const sorting_type = event.target.value;
-  const sort_products = await fetchProducts(1, currentNumber, currentBrand, pricelt, pricegt, date);
+  //const sort_products = await fetchProducts(1, currentNumber, currentBrand, pricelt, pricegt, date);
 
   let products_filter;
   switch (sorting_type) {
     case "price-desc":
-      products_filter = sort_products.currentProducts.sort((product1, product2) => 
+      products_filter = currentProducts.sort((product1, product2) => 
         product2.price - product1.price);
       break;
     case "price-asc":
-      products_filter = sort_products.currentProducts.sort((product1, product2) => 
+      products_filter = currentProducts.sort((product1, product2) => 
         product1.price - product2.price);
       break;
     case "date-desc":
-      products_filter = sort_products.currentProducts.sort((product1, product2) => 
+      products_filter = currentProducts.sort((product1, product2) => 
         new Date(product1.date) - new Date(product2.date));
       break;
     case "date-asc":
-      products_filter = sort_products.currentProducts.sort((product1, product2) => 
+      products_filter = currentProducts.sort((product1, product2) => 
         new Date(product2.date) - new Date(product1.date));
       break;
   }
