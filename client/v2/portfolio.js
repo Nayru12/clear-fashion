@@ -23,6 +23,9 @@ let currentPagination = {};
 let allFetchBrands = [];
 let allFetchColors = [];
 
+let currentBrand = {};
+let favorites = [];
+
 // instantiate the selectors
 const selectShow = document.querySelector('#show-select');
 const selectPage = document.querySelector('#page-select');
@@ -39,6 +42,8 @@ const spanNbPrice90 = document.querySelector('#nbPrice90');
 const spanNbPrice95 = document.querySelector('#nbPrice95');
 const spanLastReleased = document.querySelector('#lastReleased');
 const selectFavorite = document.querySelector('#favProducts-select');
+const selectDate = document.querySelector('#date-select');
+
 
 
 
@@ -70,24 +75,25 @@ const selectFavorite = document.querySelector('#favProducts-select');
 
 //`https://clear-fashion-api.vercel.app?page=${page}&size=${size}`
 
-const fetchProducts = async (page = 1, size = 12, brand='', pricelt='', pricegt='') => {
+const fetchProducts = async (page = 1, size = 12, brand='', pricelt='', pricegt='', date='') => {
   try {
     const response = await fetch(
-      `https://clear-fashion-nlp1.vercel.app/products?page=${page}&size=${size}&brand=${brand}&pricelt=${pricelt}&pricegt=${pricegt}`
+      `https://clear-fashion-nlp1.vercel.app/products?page=${page}&size=${size}&brand=${brand}&pricelt=${pricelt}&pricegt=${pricegt}&date=${date}`
     );
     const body = await response.json();
     
     currentProducts = body.currentProducts;
     currentPagination = body.currentPagination;
+    currentBrand = body.currentBrand;
 
     if(body == null){
       console.error(body);
-      return {currentProducts, currentPagination};
+      return {currentProducts, currentPagination, currentBrand};
     }
-    return {currentProducts, currentPagination};
+    return {currentProducts, currentPagination}, currentBrand;
   } catch (error) {
       console.error(error);
-      return {currentProducts, currentPagination};
+      return {currentProducts, currentPagination, currentBrand};
     }
     /*if (body.success !== true) {
       console.error(body);
@@ -153,7 +159,10 @@ const renderProducts = products => {
   div.classList.add('wrapper');
   const template = products
     .map(product => {
-      const isFavorite = product.favorite ? 'favorite' : 'no_favorite';
+      const isFavorite = favorites.includes(product._id) ? 'favorite' : 'no_favorite';
+      if (isFavorite === 'favorite') {
+        product.favorite = true;
+      }
       return `
       <div class="product" id=${product._id}>
         <a target="_blank" rel="noopener noreferrer" href="${product.link}"> <img src=${product.image}><br/>
@@ -170,7 +179,7 @@ const renderProducts = products => {
 
   div.innerHTML = template;
   fragment.appendChild(div);
-  sectionProducts.innerHTML = `<h2>Products - ${currentPagination.currentSize} out of 1572 products</h2>`;
+  sectionProducts.innerHTML = `<h2>Products - ${currentPagination.currentSize} out of 1576 products</h2>`;
   sectionProducts.appendChild(fragment);
 };
 
@@ -271,7 +280,7 @@ const render = (products, pagination) => {
  * Select the number of products to display
  */
 selectShow.addEventListener('change', async (event) => {
-  const products = await fetchProducts(currentPagination.currentPage, parseInt(event.target.value));
+  const products = await fetchProducts(currentPagination.currentPage, parseInt(event.target.value), currentBrand);
 
   //setCurrentProducts(products);
   render(currentProducts, currentPagination);
@@ -284,7 +293,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   //setCurrentProducts(products);
   //setBrands(brands);
   
-  render(currentProducts, currentPagination);
+  render(currentProducts, currentPagination, currentBrand);
 });
 
 
@@ -294,7 +303,7 @@ selectPage.addEventListener('change', async (event) => {
   const products = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize);
 
   //setCurrentProducts(products);
-  render(currentProducts, currentPagination);
+  render(currentProducts, currentPagination, currentBrand);
 });
 
 
@@ -316,13 +325,14 @@ selectBrand.addEventListener('change', async (event) =>{
 
 /*--------------------- TODO 3 -----------------------------*/
 //Feature 3 : Filter by recent products (less than 1 month otherwise there is no results)
+//update: less than 15 days
 let flag_recent = false;
 function filterReleased(){
   if(!flag_recent){
     const date = new Date();
 
     const products_filter = currentProducts.filter(function(product) {
-      return ((date - new Date(product.date))/(1000*60*60*24) < 30);
+      return ((date - new Date(product.date))/(1000*60*60*24) < 15);
     });
 
     flag_recent = true;
@@ -419,7 +429,7 @@ selectSort.addEventListener('change', async (event) =>{
 
 /*--------------------- TODO 13 -----------------------------*/
 //Feature 13: Save as favorite
-sectionProducts.addEventListener('click', event => {
+/*sectionProducts.addEventListener('click', event => {
 
   const productElement = event.target.parentNode;
   const id = productElement.id;
@@ -436,17 +446,37 @@ sectionProducts.addEventListener('click', event => {
     event.target.style.color = 'white';
     currentProducts[index].favorite = true;
   }
-});
+});*/
+sectionProducts.addEventListener('click', event => {
 
+  const productElement = event.target.parentNode;
+  const id = productElement.id;
+  const index = currentProducts.findIndex(product => product._id == id);
+  
+  if (favorites.includes(id)) {
+    event.target.style.backgroundColor = 'white';
+    event.target.style.color = 'black';
+    const indexRemove = favorites.indexOf(id);
+    if (indexRemove > -1) { 
+      favorites.splice(indexRemove, 1);
+    }
+  } 
+  
+  else {
+    favorites.push(id);
+    event.target.style.backgroundColor = 'red';
+    event.target.style.color = 'white';
+  }
+})
 
 /*--------------------- TODO 14 -----------------------------*/
 //Feature 14: Filter by favorite
 
-let flag_favorite = false;
-
+/*let flag_favorite = false;
+//currentPagination.currentSize = 
 function filterFav(){
+  //const products_fav = await fetchProducts('', 1572);
   if(!flag_favorite){
-    
     const products_filter = currentProducts.filter(function(product) {
       return (product.favorite == true);
     });
@@ -460,9 +490,25 @@ function filterFav(){
     selectFavorite.classList.remove('btn-red'); // retirer la classe CSS 'btn-red'
     render(currentProducts, currentPagination);
   }
+};*/
+
+let flag_favorite = false;
+//currentPagination.currentSize = 
+async function filterFav(){
+  const products_fav = await fetchProducts('', 1576);
+  if(!flag_favorite){
+    const products_filter = currentProducts.filter(product => favorites.includes(product._id));
+
+    flag_favorite = true;
+    selectFavorite.classList.add('btn-red'); // ajouter la classe CSS 'btn-red'
+    render(products_filter, currentPagination);}
+
+  else{
+    flag_favorite = false;
+    selectFavorite.classList.remove('btn-red'); // retirer la classe CSS 'btn-red'
+    render(currentProducts, currentPagination);
+  }
 };
-
-
 
 /*--------------------- ADDITIONALS FEATURES -----------------------------*/
 //Feature Additional n°1: Sort by price
@@ -476,27 +522,56 @@ selectPrice.addEventListener('change', async (event) =>{
       products_price = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize);
       break;
     case "20":
-      products_price = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize, pricelt = 20);
+      products_price = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize, '', 20);
       break;
     case "reasonable":
-      products_price = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize, pricelt = 50);
+      products_price = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize, '', 50);
       break;
     case "80":
-      products_price = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize, pricelt = 80);
-
+      products_price = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize, '', 80);
       break;
     case "100":
-      products_price = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize, pricelt = 100);
+      products_price = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize, '', 100);
       break;
     case "101":
-      products_price = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize, pricegt = 100);
+      products_price = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize, '', '', 100);
       break;
     case "200":
-      products_price = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize, pricegt = 200);
+      products_price = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize, '', '', 200);
       break;
     default:
       break;
   }
 
-  render(currentProducts, currentPagination); 
+  render(currentProducts, currentPagination, currentBrand); 
+});
+
+//Feature Additional n°2: Sort by date
+selectDate.addEventListener('change', async (event) =>{
+  
+  const sorting_type = event.target.value;
+  
+  let products;
+  var day;
+  switch (sorting_type) {
+    case "no_filter":
+      products = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize, currentBrand);
+      break;
+    case "recently":
+      products = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize, currentBrand, '', '', 15);
+      break;
+    case "1":
+      products = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize, currentBrand, '', '', 30);
+      break;
+    case "3":
+      products = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize, currentBrand, '', '', 60);
+      break;
+    case "5":
+      products = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize, currentBrand, '', '', 150);
+      break;
+    default:
+      break;
+  }
+
+  render(currentProducts, currentPagination, currentBrand); 
 });

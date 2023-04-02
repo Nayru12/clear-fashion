@@ -133,9 +133,19 @@ app.get('/products', async (request, response) => {
     filter.price = {$gte: parseInt(request.query.pricegt)};
   }
   if (request.query.date) {
-    //const date = new Date(Date.parse(request.query.date));
-    //filter.date = {$lte: date};
-    filter.date = {$gte: request.query.date};
+    //filter.date = {$lte: request.query.date};
+    
+    const days = parseInt(request.query.date);
+    const date = new Date();
+    date.setDate(date.getDate() - days);
+    const year = date.getFullYear();
+    let month = date.getMonth() + 1;
+    month = month < 10 ? `0${month}` : month;
+    let day = date.getDate();
+    day = day < 10 ? `0${day}` : day;
+    const newDate = `${year}-${month}-${day}`;
+  
+    filter.date = {$gte: newDate};
   }
 
 const options = {

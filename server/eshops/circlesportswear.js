@@ -51,10 +51,11 @@ const parse = data => {
         .trim()
         .replace(/\s/g, ' ');
 
-      const image = $(element)
-        .find('.media')
-        .find('img').eq(0)
-        .attr('src');
+      const image = "https:" + 
+        $(element)
+          .find('.media')
+          .find('img').eq(0)
+          .attr('src');
       
       const brand = "Circle Sportswear";
 

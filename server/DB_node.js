@@ -19,7 +19,7 @@ async function createDB() {
   client.close();  
 }
 
-createDB();
+//createDB();
 
 //------------------------------------ QUERIES ------------------------------------
 
