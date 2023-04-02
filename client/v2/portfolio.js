@@ -27,6 +27,10 @@ let currentBrand = {};
 let favorites = [];
 let allProducts = {};
 let currentNumber;
+let pricelt;
+let pricegt;
+let date;
+let size;
 
 // instantiate the selectors
 const selectShow = document.querySelector('#show-select');
@@ -73,7 +77,7 @@ const selectDate = document.querySelector('#date-select');
  */
 
 //`https://clear-fashion-api.vercel.app?page=${page}&size=${size}`
-let patate;
+
 const fetchProducts = async (page = 1, size = 12, brand='', pricelt='', pricegt='', date='') => {
   try {
     const response = await fetch(
@@ -84,8 +88,11 @@ const fetchProducts = async (page = 1, size = 12, brand='', pricelt='', pricegt=
     currentProducts = body.currentProducts;
     currentPagination = body.currentPagination;
     currentBrand = body.currentBrand;
-    patate = body;
     currentNumber = body.totalNumber;
+    size = size;
+    pricegt = pricegt;
+    pricelt = pricelt;
+    date = date;
 
     if(body == null){
       console.error(body);
@@ -271,16 +278,21 @@ const renderIndicators = (products, pagination) => {
   
   selectBrand.innerHTML = options;
 };*/
+
 const renderBrands = brands_name => {
   //const {allBrands} = brands_name;
   //const options = ['All'].concat(brands_name)
  const options = ["All", ...brands_name] //spread operator to unpack elements
     .map(name => {
-      return `<option value="${name}">${name}</option>`
+      const value = name === "All" ? "" : name;
+      return `<option value="${value}">${name}</option>`
     })
     .join('');
   
   selectBrand.innerHTML = options;
+  const currentBrandIndex = brands_name.indexOf(currentBrand);
+  const selectedIndex = currentBrandIndex !== -1 ? currentBrandIndex + 1 : 0;
+  selectBrand.selectedIndex = selectedIndex;
 };
 
 const render = (products, pagination) => {
@@ -299,7 +311,7 @@ const render = (products, pagination) => {
  * Select the number of products to display
  */
 selectShow.addEventListener('change', async (event) => {
-  const products = await fetchProducts(currentPagination.currentPage, parseInt(event.target.value), currentBrand);
+  const products = await fetchProducts(currentPagination.currentPage, parseInt(event.target.value), currentBrand, pricelt, pricegt, date);
 
   //setCurrentProducts(products);
   render(currentProducts, currentPagination);
@@ -313,14 +325,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   //setCurrentProducts(products);
   //setBrands(brands);
   
-  render(currentProducts, currentPagination, currentBrand);
+  render(currentProducts, currentPagination, currentBrand, pricelt, pricegt, date);
 });
 
 
 /*--------------------- TODO 1 -----------------------------*/
 //Feature 1 : Browse pages
 selectPage.addEventListener('change', async (event) => {
-  const products = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize, currentBrand);
+  const products = await fetchProducts(parseInt(event.target.value), size, currentBrand, pricelt, pricegt, date);
 
   //setCurrentProducts(products);
   render(currentProducts, currentPagination, currentBrand);
@@ -338,7 +350,7 @@ selectBrand.addEventListener('change', async (event) =>{
   });*/
   selectedBrand = selectedBrand == "All" ? '' : selectedBrand;
 
-  const products_filter = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize, selectedBrand);
+  const products_filter = await fetchProducts(parseInt(event.target.value), size, selectedBrand, pricelt, pricegt, date);
   render(currentProducts, currentPagination);
 });
 
@@ -523,6 +535,7 @@ async function filterFav(){
 
 /*--------------------- ADDITIONALS FEATURES -----------------------------*/
 //Feature Additional n°1: Sort by price
+let patate;
 selectPrice.addEventListener('change', async (event) =>{
 
   const sorting_type = event.target.value;
@@ -530,37 +543,39 @@ selectPrice.addEventListener('change', async (event) =>{
   let products_price;
   switch (sorting_type) {
     case "no_filter":
-      products_price = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize);
+      products_price = await fetchProducts(currentProducts, size);
+      patate =products_price;
       break;
     case "20":
-      products_price = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize, '', 20);
+      products_price = await fetchProducts(currentProducts, size, currentBrand, parseInt(event.target.value));
+      patate = products_price;
       break;
     case "reasonable":
-      products_price = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize, '', 50);
+      products_price = await fetchProducts(currentProducts, size, currentBrand, parseInt(event.target.value));
       break;
     case "80":
-      products_price = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize, '', 80);
+      products_price = await fetchProducts(currentProducts, size, currentBrand, parseInt(event.target.value));
 
       break;
     case "100":
-      products_price = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize, '', 100);
+      products_price = await fetchProducts(currentProducts, size, currentBrand, parseInt(event.target.value));
       break;
     case "101":
-      products_price = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize, '', '', 100);
+      products_price = await fetchProducts(currentProducts, size, currentBrand, '', parseInt(event.target.value));
       break;
     case "200":
-      products_price = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize, '', '', 200);
+      products_price = await fetchProducts(currentProducts, size, currentBrand, '', parseInt(event.target.value));
       break;
     default:
       break;
   }
 
-  render(products_price.currentProducts, currentPagination); 
+  render(products_price.currentProducts, currentPagination, currentBrand); 
 });
 
 
 //Feature Additional n°2: Sort by date
-/*selectDate.addEventListener('change', async (event) =>{
+selectDate.addEventListener('change', async (event) =>{
   
   const sorting_type = event.target.value;
   
@@ -568,23 +583,23 @@ selectPrice.addEventListener('change', async (event) =>{
   var day;
   switch (sorting_type) {
     case "no_filter":
-      products = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize, currentBrand);
+      products = await fetchProducts(currentProducts, size, currentBrand, pricelt, pricegt, date);
       break;
     case "recently":
-      products = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize, currentBrand, '', '', 15);
+      products = await fetchProducts(currentProducts, size, currentBrand, pricelt, pricegt, parseInt(event.target.value));
       break;
     case "1":
-      products = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize, currentBrand, '', '', 30);
+      products = await fetchProducts(currentProducts, size, currentBrand, pricelt, pricegt, parseInt(event.target.value));
       break;
     case "3":
-      products = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize, currentBrand, '', '', 60);
+      products = await fetchProducts(currentProducts, size, currentBrand, pricelt, pricegt, parseInt(event.target.value));
       break;
     case "5":
-      products = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize, currentBrand, '', '', 150);
+      products = await fetchProducts(currentProducts, size, currentBrand, pricelt, pricegt, parseInt(event.target.value));
       break;
     default:
       break;
   }
 
   render(currentProducts, currentPagination, currentBrand); 
-});*/
+});
