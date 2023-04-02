@@ -23,7 +23,7 @@ app.options('*', cors());
 
 app.get('/', (request, response) => {
   response.send({'ack': true},
-  "API d'Inès PEREZ aka Nayru");
+  );
 });
 
 
