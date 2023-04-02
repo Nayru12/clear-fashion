@@ -23,7 +23,7 @@ app.options('*', cors());
 
 app.get('/', (request, response) => {
   response.send({'ack': true,
-                message: "hey"}
+                message: "API Clear Fashion d'Inès PEREZ aka Nayru"}
   );
 });
 
