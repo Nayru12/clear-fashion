@@ -29,7 +29,7 @@ app.get('/', (request, response) => {
 
 app.listen(PORT);
 
-console.log(`📡 Running on port ${PORT}`);
+console.log(`📡 Runniing on port ${PORT}`);
 
 
 
