@@ -22,7 +22,7 @@ app.use(helmet());
 app.options('*', cors());
 
 app.get('/', (request, response) => {
-  response.send({'adck': true},
+  response.send({'ack': true},
   "API d'Inès PEREZ aka Nayru");
 });
 
