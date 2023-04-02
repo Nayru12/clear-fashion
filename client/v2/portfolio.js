@@ -49,6 +49,7 @@ const spanNbPrice95 = document.querySelector('#nbPrice95');
 const spanLastReleased = document.querySelector('#lastReleased');
 const selectFavorite = document.querySelector('#favProducts-select');
 const selectDate = document.querySelector('#date-select');
+const spanNbFavorites = document.querySelector('#nbFavorites');
 
 
 /**
@@ -198,7 +199,7 @@ const renderProducts = products => {
         <span class="date">${product.date}</span><br/>
         <span class="name">${product.name}<br/></span></a>
         <span class="price">${product.price}€</span>
-        <button id="favorite-select" class=${isFavorite} data-productid=${product._id}>Favori</button>
+        <button id="favorite-select" class=${isFavorite}>Favori</button>
       </div>
     `;
     })
@@ -247,22 +248,22 @@ const renderIndicators = (products, pagination) => {
 
   //Feature 9 : Number of recent products indicator
   
-  const {length : recent_length} =  products.filter(product =>
+  const {length : recent_length} =  allProducts.currentProducts.filter(product =>
     ((new Date() - new Date(product.date))/(1000*60*60*24) < 30));
     
   spanNbNews.innerHTML = recent_length;
 
 
   //Feature 10 : p50, p90 and p95 price value indicator
-  products.sort((product1, product2) => product1.price - product2.price);
-  spanNbPrice50.innerHTML = products[Math.round(50/100 * (products.length+1))-1].price;
-  spanNbPrice90.innerHTML = products[Math.round(90/100 * (products.length+1))-1].price;
-  spanNbPrice95.innerHTML = products[Math.round(95/100 * (products.length+1))-1].price;
+  allProducts.currentProducts.sort((product1, product2) => product1.price - product2.price);
+  spanNbPrice50.innerHTML = allProducts.currentProducts[Math.round(50/100 * (allProducts.currentProducts.length+1))-1].price;
+  spanNbPrice90.innerHTML = allProducts.currentProducts[Math.round(90/100 * (allProducts.currentProducts.length+1))-1].price;
+  spanNbPrice95.innerHTML = allProducts.currentProducts[Math.round(95/100 * (allProducts.currentProducts.length+1))-1].price;
 
 
   //Feature 11 : Last released date indicator
-  products.sort((product1, product2) => new Date(product2.date) - new Date(product1.date));
-  spanLastReleased.innerHTML = products[0].date;
+  allProducts.currentProducts.sort((product1, product2) => new Date(product2.date) - new Date(product1.date));
+  spanLastReleased.innerHTML = allProducts.currentProducts[0].date;
 
 };
 
@@ -402,23 +403,24 @@ function filterPrice(){
 selectSort.addEventListener('change', async (event) =>{
   
   const sorting_type = event.target.value;
-  
+  const sort_products = await fetchProducts(1, currentNumber, currentBrand, pricelt, pricegt, date);
+
   let products_filter;
   switch (sorting_type) {
     case "price-desc":
-      products_filter = currentProducts.sort((product1, product2) => 
+      products_filter = sort_products.currentProducts.sort((product1, product2) => 
         product2.price - product1.price);
       break;
     case "price-asc":
-      products_filter = currentProducts.sort((product1, product2) => 
+      products_filter = sort_products.currentProducts.sort((product1, product2) => 
         product1.price - product2.price);
       break;
     case "date-desc":
-      products_filter = currentProducts.sort((product1, product2) => 
+      products_filter = sort_products.currentProducts.sort((product1, product2) => 
         new Date(product1.date) - new Date(product2.date));
       break;
     case "date-asc":
-      products_filter = currentProducts.sort((product1, product2) => 
+      products_filter = sort_products.currentProducts.sort((product1, product2) => 
         new Date(product2.date) - new Date(product1.date));
       break;
   }
@@ -466,17 +468,18 @@ sectionProducts.addEventListener('click', event => {
   const productElement = event.target.parentNode;
   const id = productElement.id;
   const index = currentProducts.findIndex(product => product._id == id);
+  const index_all = allProducts.currentProducts.findIndex(product => product._id == id);
 
-  if (currentProducts[index].favorite == true) {
+  if (allProducts.currentProducts[index_all].favorite == true) {
     event.target.style.backgroundColor = 'white';
     event.target.style.color = 'black';
-    currentProducts[index].favorite = false;
+    allProducts.currentProducts[index_all].favorite = false;
   } 
   
   else {
     event.target.style.backgroundColor = 'red';
     event.target.style.color = 'white';
-    currentProducts[index].favorite = true;
+    allProducts.currentProducts[index_all].favorite = true;
   }
 
   if (favorites.includes(id)) {
@@ -489,6 +492,9 @@ sectionProducts.addEventListener('click', event => {
   else {
     favorites.push(id);
   }
+
+  //Additional Feature: Number of favorites products indicator
+  spanNbFavorites.innerHTML = favorites.length;
 });
 
 
@@ -551,11 +557,10 @@ selectPrice.addEventListener('change', async (event) =>{
       patate = products_price;
       break;
     case "reasonable":
-      products_price = await fetchProducts(currentProducts, size, currentBrand, parseInt(event.target.value));
+      products_price = await fetchProducts(currentProducts, size, currentBrand, 50);
       break;
     case "80":
       products_price = await fetchProducts(currentProducts, size, currentBrand, parseInt(event.target.value));
-
       break;
     case "100":
       products_price = await fetchProducts(currentProducts, size, currentBrand, parseInt(event.target.value));
@@ -586,16 +591,16 @@ selectDate.addEventListener('change', async (event) =>{
       products = await fetchProducts(currentProducts, size, currentBrand, pricelt, pricegt, date);
       break;
     case "recently":
-      products = await fetchProducts(currentProducts, size, currentBrand, pricelt, pricegt, parseInt(event.target.value));
+      products = await fetchProducts(currentProducts, size, currentBrand, pricelt, pricegt, 15);
       break;
     case "1":
-      products = await fetchProducts(currentProducts, size, currentBrand, pricelt, pricegt, parseInt(event.target.value));
+      products = await fetchProducts(currentProducts, size, currentBrand, pricelt, pricegt, 30);
       break;
     case "3":
-      products = await fetchProducts(currentProducts, size, currentBrand, pricelt, pricegt, parseInt(event.target.value));
+      products = await fetchProducts(currentProducts, size, currentBrand, pricelt, pricegt, 90);
       break;
     case "5":
-      products = await fetchProducts(currentProducts, size, currentBrand, pricelt, pricegt, parseInt(event.target.value));
+      products = await fetchProducts(currentProducts, size, currentBrand, pricelt, pricegt, 150);
       break;
     default:
       break;
