@@ -162,6 +162,7 @@ const options = {
       currentSize: products.length,
       pageCount: Math.ceil(await collection.countDocuments(filter) / size)
     },
-    totalNumber: await collection.countDocuments(filter)
+    totalNumber: await collection.countDocuments(filter),
+    currentBrand: request.query.brand
   });
 });

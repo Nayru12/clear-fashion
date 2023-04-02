@@ -26,6 +26,7 @@ let allFetchColors = [];
 let currentBrand = {};
 let favorites = [];
 let allProducts = {};
+let currentNumber;
 
 // instantiate the selectors
 const selectShow = document.querySelector('#show-select');
@@ -72,7 +73,7 @@ const selectDate = document.querySelector('#date-select');
  */
 
 //`https://clear-fashion-api.vercel.app?page=${page}&size=${size}`
-
+let patate;
 const fetchProducts = async (page = 1, size = 12, brand='', pricelt='', pricegt='', date='') => {
   try {
     const response = await fetch(
@@ -83,6 +84,8 @@ const fetchProducts = async (page = 1, size = 12, brand='', pricelt='', pricegt=
     currentProducts = body.currentProducts;
     currentPagination = body.currentPagination;
     currentBrand = body.currentBrand;
+    patate = body;
+    currentNumber = body.totalNumber;
 
     if(body == null){
       console.error(body);
@@ -111,7 +114,7 @@ const fetchAllProducts = async (size = 1576) => {
     );
     const body = await response.json();
     
-    allProducts = body.currentProducts;
+    allProducts = body;
 
     if(body == null){
       console.error(body);
@@ -196,7 +199,7 @@ const renderProducts = products => {
 
   div.innerHTML = template;
   fragment.appendChild(div);
-  sectionProducts.innerHTML = `<h2>Products - ${currentPagination.currentSize} out of 1576 products</h2>`;
+  sectionProducts.innerHTML = `<h2>Products - ${currentPagination.currentSize} out of ${currentNumber} results</h2>`;
   sectionProducts.appendChild(fragment);
 };
 
@@ -226,7 +229,7 @@ const renderPagination = pagination => {
 const renderIndicators = (products, pagination) => {
   const {currentSize} = pagination;
 
-  spanNbProducts.innerHTML = currentSize;
+  spanNbProducts.innerHTML = allProducts.totalNumber;
 
 
   //Feature 8 : Number of brands indicator
@@ -317,7 +320,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 /*--------------------- TODO 1 -----------------------------*/
 //Feature 1 : Browse pages
 selectPage.addEventListener('change', async (event) => {
-  const products = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize);
+  const products = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize, currentBrand);
 
   //setCurrentProducts(products);
   render(currentProducts, currentPagination, currentBrand);
@@ -503,9 +506,9 @@ function filterFav(){
 let flag_favorite = false;
 //currentPagination.currentSize = 
 async function filterFav(){
-  const products_fav = allProducts;
+  const products_fav = allProducts.currentProducts;
   if(!flag_favorite){
-    const products_filter = allProducts.filter(product => favorites.includes(product._id));
+    const products_filter = allProducts.currentProducts.filter(product => favorites.includes(product._id));
 
     flag_favorite = true;
     selectFavorite.classList.add('btn-red'); // ajouter la classe CSS 'btn-red'
@@ -521,41 +524,43 @@ async function filterFav(){
 /*--------------------- ADDITIONALS FEATURES -----------------------------*/
 //Feature Additional n°1: Sort by price
 selectPrice.addEventListener('change', async (event) =>{
-  
+
   const sorting_type = event.target.value;
-  
+
   let products_price;
   switch (sorting_type) {
     case "no_filter":
-      products_price = await fetchProducts(parseInt(event.target.value), '', currentBrand);
+      products_price = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize);
       break;
     case "20":
-      products_price = await fetchProducts(parseInt(event.target.value), '', currentBrand, 20);
+      products_price = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize, '', 20);
       break;
     case "reasonable":
-      products_price = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize, currentBrand, 50);
+      products_price = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize, '', 50);
       break;
     case "80":
-      products_price = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize, currentBrand, 80);
+      products_price = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize, '', 80);
+
       break;
     case "100":
-      products_price = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize, currentBrand, 100);
+      products_price = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize, '', 100);
       break;
     case "101":
-      products_price = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize, currentBrand, '', 100);
+      products_price = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize, '', '', 100);
       break;
     case "200":
-      products_price = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize, currentBrand, '', 200);
+      products_price = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize, '', '', 200);
       break;
     default:
       break;
   }
 
-  render(currentProducts, currentPagination, currentBrand); 
+  render(products_price.currentProducts, currentPagination); 
 });
 
+
 //Feature Additional n°2: Sort by date
-selectDate.addEventListener('change', async (event) =>{
+/*selectDate.addEventListener('change', async (event) =>{
   
   const sorting_type = event.target.value;
   
@@ -582,4 +587,4 @@ selectDate.addEventListener('change', async (event) =>{
   }
 
   render(currentProducts, currentPagination, currentBrand); 
-});
+});*/
