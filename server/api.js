@@ -22,7 +22,7 @@ app.use(helmet());
 app.options('*', cors());
 
 app.get('/', (request, response) => {
-  response.send({'akd': true,
+  response.send({'ack': true,
                 message: "hey"}
   );
 });
