@@ -163,6 +163,6 @@ const options = {
       pageCount: Math.ceil(await collection.countDocuments(filter) / size)
     },
     totalNumber: await collection.countDocuments(filter),
-    currentBrand: request.query.brand
+    currentBrand: filter.brand
   });
 });
