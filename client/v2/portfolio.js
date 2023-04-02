@@ -25,6 +25,7 @@ let allFetchColors = [];
 
 let currentBrand = {};
 let favorites = [];
+let allProducts = {};
 
 // instantiate the selectors
 const selectShow = document.querySelector('#show-select');
@@ -43,9 +44,6 @@ const spanNbPrice95 = document.querySelector('#nbPrice95');
 const spanLastReleased = document.querySelector('#lastReleased');
 const selectFavorite = document.querySelector('#favProducts-select');
 const selectDate = document.querySelector('#date-select');
-
-
-
 
 
 /**
@@ -90,7 +88,7 @@ const fetchProducts = async (page = 1, size = 12, brand='', pricelt='', pricegt=
       console.error(body);
       return {currentProducts, currentPagination, currentBrand};
     }
-    return {currentProducts, currentPagination}, currentBrand;
+    return {currentProducts, currentPagination, currentBrand};
   } catch (error) {
       console.error(error);
       return {currentProducts, currentPagination, currentBrand};
@@ -104,6 +102,26 @@ const fetchProducts = async (page = 1, size = 12, brand='', pricelt='', pricegt=
     console.error(error);
     return {currentProducts, currentPagination};
   }*/
+};
+
+const fetchAllProducts = async (size = 1576) => {
+  try {
+    const response = await fetch(
+      `https://clear-fashion-nlp1.vercel.app/products?size=${size}`
+    );
+    const body = await response.json();
+    
+    allProducts = body.currentProducts;
+
+    if(body == null){
+      console.error(body);
+      return {allProducts};
+    }
+    return {allProducts};
+  } catch (error) {
+      console.error(error);
+      return {allProducts};
+    }
 };
 
 const fetchBrands = async () => {
@@ -166,12 +184,11 @@ const renderProducts = products => {
       return `
       <div class="product" id=${product._id}>
         <a target="_blank" rel="noopener noreferrer" href="${product.link}"> <img src=${product.image}><br/>
-        <span class="brand">${product.brand}<br/></span>
+        <span class="brand">${product.brand}</span>
+        <span class="date">${product.date}</span><br/>
         <span class="name">${product.name}<br/></span></a>
         <span class="price">${product.price}€</span>
-        <button id="favorite-select" class=${isFavorite}>Favori</button>
-        <span class="date">${product.date}</span>
-        <span class="color">${product.color}</span>
+        <button id="favorite-select" class=${isFavorite} data-productid=${product._id}>Favori</button>
       </div>
     `;
     })
@@ -263,7 +280,6 @@ const renderBrands = brands_name => {
   selectBrand.innerHTML = options;
 };
 
-
 const render = (products, pagination) => {
   renderProducts(products);
   renderPagination(pagination);
@@ -289,6 +305,7 @@ selectShow.addEventListener('change', async (event) => {
 document.addEventListener('DOMContentLoaded', async () => {
   const products = await fetchProducts();
   const brands = await fetchBrands();
+  const all = await fetchAllProducts();
 
   //setCurrentProducts(products);
   //setBrands(brands);
@@ -429,7 +446,7 @@ selectSort.addEventListener('change', async (event) =>{
 
 /*--------------------- TODO 13 -----------------------------*/
 //Feature 13: Save as favorite
-/*sectionProducts.addEventListener('click', event => {
+sectionProducts.addEventListener('click', event => {
 
   const productElement = event.target.parentNode;
   const id = productElement.id;
@@ -446,16 +463,8 @@ selectSort.addEventListener('change', async (event) =>{
     event.target.style.color = 'white';
     currentProducts[index].favorite = true;
   }
-});*/
-sectionProducts.addEventListener('click', event => {
 
-  const productElement = event.target.parentNode;
-  const id = productElement.id;
-  const index = currentProducts.findIndex(product => product._id == id);
-  
   if (favorites.includes(id)) {
-    event.target.style.backgroundColor = 'white';
-    event.target.style.color = 'black';
     const indexRemove = favorites.indexOf(id);
     if (indexRemove > -1) { 
       favorites.splice(indexRemove, 1);
@@ -464,10 +473,9 @@ sectionProducts.addEventListener('click', event => {
   
   else {
     favorites.push(id);
-    event.target.style.backgroundColor = 'red';
-    event.target.style.color = 'white';
   }
-})
+});
+
 
 /*--------------------- TODO 14 -----------------------------*/
 //Feature 14: Filter by favorite
@@ -495,9 +503,9 @@ function filterFav(){
 let flag_favorite = false;
 //currentPagination.currentSize = 
 async function filterFav(){
-  const products_fav = await fetchProducts('', 1576);
+  const products_fav = allProducts;
   if(!flag_favorite){
-    const products_filter = currentProducts.filter(product => favorites.includes(product._id));
+    const products_filter = allProducts.filter(product => favorites.includes(product._id));
 
     flag_favorite = true;
     selectFavorite.classList.add('btn-red'); // ajouter la classe CSS 'btn-red'
@@ -519,25 +527,25 @@ selectPrice.addEventListener('change', async (event) =>{
   let products_price;
   switch (sorting_type) {
     case "no_filter":
-      products_price = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize);
+      products_price = await fetchProducts(parseInt(event.target.value), '', currentBrand);
       break;
     case "20":
-      products_price = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize, '', 20);
+      products_price = await fetchProducts(parseInt(event.target.value), '', currentBrand, 20);
       break;
     case "reasonable":
-      products_price = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize, '', 50);
+      products_price = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize, currentBrand, 50);
       break;
     case "80":
-      products_price = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize, '', 80);
+      products_price = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize, currentBrand, 80);
       break;
     case "100":
-      products_price = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize, '', 100);
+      products_price = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize, currentBrand, 100);
       break;
     case "101":
-      products_price = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize, '', '', 100);
+      products_price = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize, currentBrand, '', 100);
       break;
     case "200":
-      products_price = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize, '', '', 200);
+      products_price = await fetchProducts(parseInt(event.target.value), currentPagination.currentSize, currentBrand, '', 200);
       break;
     default:
       break;

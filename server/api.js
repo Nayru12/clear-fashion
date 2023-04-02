@@ -134,7 +134,7 @@ app.get('/products', async (request, response) => {
   }
   if (request.query.date) {
     //filter.date = {$lte: request.query.date};
-    
+
     const days = parseInt(request.query.date);
     const date = new Date();
     date.setDate(date.getDate() - days);
@@ -160,5 +160,6 @@ const options = {
       currentSize: products.length,
       pageCount: Math.ceil(await collection.countDocuments(filter) / size)
     },
+    totalNumber: await collection.countDocuments(filter)
   });
 });
